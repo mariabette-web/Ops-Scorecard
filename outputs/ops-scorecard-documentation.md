@@ -18,6 +18,7 @@ The Ops Scorecard is a Tableau dashboard that tracks KPIs for each operations te
 | Data | Source | Notes |
 |---|---|---|
 | KPI metrics | `dw_gold.fct_agent_daily_metrics` | Gold-layer DBT model; one row per agent per day |
+| KPI metrics | `dw_gold.fct_ops_daily_metrics` | Gold-layer DBT model |
 | Goals | `employee_meetings.ops_goal_setting` | Accessed via Metabase |
 
 **Note on KPI data:** `dw_gold.fct_agent_daily_metrics` is a gold-layer DBT model. Data at this layer has been cleaned and aggregated from upstream sources. If a KPI value looks off, trace upstream via DBT lineage before assuming the Tableau calc is wrong.
@@ -73,6 +74,31 @@ All KPIs are calculated from `dw_gold.fct_agent_daily_metrics`.
 /
 (count_aws_calls_outbound_made + count_aws_calls_inbound_taken)
 ```
+
+---
+
+## Org Level KPI Definitions
+
+Org-level KPIs are calculated across all teams and displayed at the "All Teams" level.
+
+| KPI | Formula | What It Measures |
+|---|---|---|
+| Service Level Chat | `count_chat_tickets_within_service_level_120 / count_chat_tickets` | % of chat tickets answered within 120 seconds out of total chat tickets handled, per team and across all teams |
+| Service Level Phone | `count_aws_calls_within_service_level / count_aws_calls_offered` | % of phone calls answered within the service level threshold out of total calls offered, per team and across all teams |
+| Service Level Web | `count_web_tickets_within_service_level / count_web_tickets` | % of web tickets answered within the service level threshold out of total web tickets handled, per team and across all teams |
+| 28d Customer Profitability | `avg(avg_28d_customer_profit)` | Average 28-day customer profitability across all teams |
+
+### Org Level Report Structure
+
+| Team | Schedule Adherence | Overall QA | Overall CSAT % | Net C/R per Ticket | Overall Chat AHT | Public Updates AHT | Phone AHT | (IRT) Avg Cost per Case | Stripe Dispute Win Rate | Updates AHT | Phone Save Rate | Chat Save Rate | Chats Per Hour | Service Level Chat | Service Level Phone | Service Level Web | 28d Customer Profitability |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| All Teams | ✓ | ✓ | ✓ | ✓ | | | | | | | | | | ✓ | ✓ | ✓ | ✓ |
+| Escalations | ✓ | ✓ | ✓ | ✓ | ✓ | | | | | | | | | ✓ | ✓ | ✓ | |
+| Retention | ✓ | ✓ | | ✓ | ✓ | | ✓ | | | | ✓ | ✓ | ✓ | | ✓ | | |
+| Tier I | ✓ | ✓ | ✓ | ✓ | | | ✓ | | | | | | | ✓ | ✓ | | |
+| Tier II | ✓ | ✓ | ✓ | ✓ | | | | | | | | | | ✓ | ✓ | | |
+| Tier III | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | | | | | | ✓ | ✓ | ✓ | |
+| Tier IV | ✓ | ✓ | ✓ | | ✓ | | ✓ | ✓ | ✓ | ✓ | | | | | ✓ | ✓ | |
 
 ---
 
@@ -148,7 +174,7 @@ The scorecard is organized by team. Each team has its own set of KPIs.
 
 ## Related Resources
 
-- **DBT model:** `dw_gold.fct_agent_daily_metrics` — review in DBT docs for full column list and upstream lineage
+- **DBT models:** `dw_gold.fct_agent_daily_metrics`, `dw_gold.fct_ops_daily_metrics` — review in DBT docs for full column list and upstream lineage
 - **Metabase:** Cross-check individual KPIs here before escalating data issues
 
 ---
